@@ -49,7 +49,7 @@ python-study/
 * [x] Indexing & Slicing
 * [x] loc / iloc
 * [x] Statistics
-* [ ] Missing Value Handling
+* [x] Missing Value Handling
 * [ ] Sorting
 * [ ] Broadcasting & Column Operations
 * [ ] Merge & Concat
