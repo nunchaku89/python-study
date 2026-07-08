@@ -1,0 +1,185 @@
+# Python Data Analysis Study
+
+Python을 이용한 데이터 분석 역량을 기르기 위한 학습 저장소입니다.
+
+목표는 **Python 기초 → NumPy → Pandas → 데이터 분석 프로젝트**까지 단계적으로 학습하며, 모든 과정과 결과를 기록하는 것입니다.
+
+---
+
+# Learning Goal
+
+* Python 기초 문법 익히기
+* NumPy를 이용한 수치 데이터 처리
+* Pandas를 이용한 데이터 분석
+* 데이터 전처리 및 분석 프로젝트 수행
+* GitHub를 통한 학습 과정 기록 및 포트폴리오 구축
+
+---
+
+# Repository Structure
+
+```text
+python-study/
+│
+├── exercises/      # 실습 코드
+├── logs/           # 개발 로그
+├── data/           # 실습 데이터(CSV 등)
+├── projects/       # 프로젝트
+├── notebooks/      # Jupyter Notebook
+└── README.md
+```
+
+---
+
+# Learning Progress
+
+## Python Fundamentals
+
+* [x] Function
+* [x] File I/O
+* [x] List & Dictionary
+* [x] List Comprehension
+* [x] Exception Handling
+
+## NumPy & Pandas
+
+* [x] NumPy Array
+* [x] Boolean Indexing (NumPy)
+* [ ] DataFrame Filtering (Pandas)
+* [ ] Indexing & Slicing
+* [ ] loc / iloc
+* [ ] Statistics
+* [ ] Missing Value Handling
+* [ ] Sorting
+* [ ] Broadcasting & Column Operations
+* [ ] Merge & Concat
+
+## Projects
+
+* [ ] Student Score Analysis
+* [ ] CSV Data Analysis
+* [ ] Public Data Analysis
+* [ ] Personal Data Analysis
+
+---
+
+# Learning Curriculum
+
+## Phase 1 - Python Fundamentals
+
+### Function
+
+* 함수 정의 및 호출
+* Parameter
+* Return
+* 함수 분리
+
+### File I/O
+
+* 파일 생성
+* 파일 읽기
+* 파일 쓰기
+* Append
+* with 문
+
+### List & Dictionary
+
+* List
+* Dictionary
+* List of Dictionary
+* 반복문을 이용한 데이터 처리
+
+### List Comprehension
+
+* 데이터 변환
+* 조건 필터링
+* Pythonic 코드 작성
+
+### Exception Handling
+
+* try / except
+* ValueError
+* FileNotFoundError
+* 데이터 정제 기초
+
+---
+
+## Phase 2 - NumPy & Pandas
+
+### Chapter 1
+
+NumPy Array
+↔ Pandas DataFrame
+
+### Chapter 2
+
+NumPy Boolean Indexing
+↔ Pandas DataFrame Filtering
+
+### Chapter 3
+
+NumPy Indexing & Slicing
+↔ Pandas loc / iloc
+
+### Chapter 4
+
+NumPy Statistics
+↔ Pandas Statistics
+
+### Chapter 5
+
+NumPy Missing Values
+↔ Pandas Missing Value Handling
+
+### Chapter 6
+
+NumPy Broadcasting
+↔ Pandas Column Operations
+
+### Chapter 7
+
+NumPy Array Operations
+↔ Pandas Merge / Concat
+
+---
+
+## Phase 3 - Data Analysis Projects
+
+### Project 1
+
+학생 성적 데이터 분석
+
+### Project 2
+
+CSV 데이터 분석
+
+### Project 3
+
+공공데이터 분석
+
+### Project 4
+
+개인 데이터 분석
+
+---
+
+# Development Log
+
+| Topic              | Log                          | Exercise                          |
+| ------------------ | ---------------------------- | --------------------------------- |
+| Function           | `logs/function.md`           | `exercises/function.py`           |
+| File I/O           | `logs/file_io.md`            | `exercises/file_io.py`            |
+| List & Dictionary  | `logs/list_dictionary.md`    | `exercises/list_dictionary.py`    |
+| List Comprehension | `logs/list_comprehension.md` | `exercises/list_comprehension.py` |
+| Exception Handling | `logs/exception_handling.md` | `exercises/exception.py`          |
+| NumPy Array        | `logs/numpy_array.md`        | `exercises/numpy_array.py`        |
+
+---
+
+# Study Principles
+
+* 개념을 이해한 후 직접 구현한다.
+* 모든 학습 내용은 실습 코드와 개발 로그를 함께 기록한다.
+* 단순히 문법을 암기하지 않고 데이터 분석 관점에서 학습한다.
+* NumPy와 Pandas를 동일한 개념으로 연결하여 이해한다.
+* 프로젝트를 통해 실제 데이터를 분석하며 학습 내용을 검증한다.
