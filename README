@@ -45,9 +45,9 @@ python-study/
 
 * [x] NumPy Array
 * [x] Boolean Indexing (NumPy)
-* [ ] DataFrame Filtering (Pandas)
-* [ ] Indexing & Slicing
-* [ ] loc / iloc
+* [x] DataFrame Filtering (Pandas)
+* [x] Indexing & Slicing
+* [x] loc / iloc
 * [ ] Statistics
 * [ ] Missing Value Handling
 * [ ] Sorting
