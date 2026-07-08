@@ -48,7 +48,7 @@ python-study/
 * [x] DataFrame Filtering (Pandas)
 * [x] Indexing & Slicing
 * [x] loc / iloc
-* [ ] Statistics
+* [x] Statistics
 * [ ] Missing Value Handling
 * [ ] Sorting
 * [ ] Broadcasting & Column Operations
