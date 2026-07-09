@@ -1,18 +1,142 @@
 # Python Data Analysis Study
 
-Python을 이용한 데이터 분석 역량을 기르기 위한 학습 저장소입니다.
+Java 개발자로서 Python, NumPy, Pandas를 활용한 데이터 분석 역량을 기르기 위한 학습 저장소입니다.
 
-목표는 **Python 기초 → NumPy → Pandas → 데이터 분석 프로젝트**까지 단계적으로 학습하며, 모든 과정과 결과를 기록하는 것입니다.
+단순히 문법을 익히는 것이 아니라 **실제 데이터 분석 프로젝트를 수행할 수 있는 수준**을 목표로 학습을 진행합니다.
 
 ---
 
-# Learning Goal
+# Learning Roadmap
 
-* Python 기초 문법 익히기
-* NumPy를 이용한 수치 데이터 처리
-* Pandas를 이용한 데이터 분석
-* 데이터 전처리 및 분석 프로젝트 수행
-* GitHub를 통한 학습 과정 기록 및 포트폴리오 구축
+## Phase 1. Python Fundamentals ✅
+
+기초 문법과 데이터 처리에 필요한 Python 기능을 학습합니다.
+
+| Status | Topic              |
+| ------ | ------------------ |
+| ✅      | Function           |
+| ✅      | File I/O           |
+| ✅      | List & Dictionary  |
+| ✅      | List Comprehension |
+| ✅      | Exception Handling |
+
+---
+
+## Phase 2. NumPy & Pandas Core
+
+### NumPy
+
+| Status | Topic              |
+| ------ | ------------------ |
+| ✅      | NumPy Array        |
+| ✅      | Boolean Indexing   |
+| ✅      | Indexing & Slicing |
+| ✅      | Statistics         |
+| ✅      | Missing Values     |
+| ⬜      | Broadcasting       |
+
+### Pandas
+
+| Status | Topic               |
+| ------ | ------------------- |
+| ✅      | DataFrame           |
+| ✅      | DataFrame Filtering |
+| ✅      | loc / iloc          |
+| ✅      | GroupBy             |
+| ⬜      | Column Operations   |
+| ⬜      | Merge / Concat      |
+| ⬜      | Apply               |
+| ⬜      | Pivot Table         |
+
+---
+
+## Phase 3. Mini Projects
+
+학습한 기능을 실제 데이터에 적용합니다.
+
+| Status | Project                            |
+| ------ | ---------------------------------- |
+| 🔄     | Project 1 - Student Score Analysis |
+| ⬜      | Project 2 - Sales Analysis         |
+| ⬜      | Project 3 - Public Data Analysis   |
+
+---
+
+## Phase 4. Visualization
+
+데이터를 시각적으로 표현하는 방법을 학습합니다.
+
+| Status | Topic                 |
+| ------ | --------------------- |
+| ⬜      | Matplotlib Basics     |
+| ⬜      | Line Chart            |
+| ⬜      | Bar Chart             |
+| ⬜      | Scatter Plot          |
+| ⬜      | Histogram             |
+| ⬜      | Project Visualization |
+
+---
+
+## Phase 5. Portfolio Project
+
+실제 데이터 분석 프로젝트를 수행하여 GitHub 포트폴리오를 완성합니다.
+
+예상 프로젝트
+
+* 공공데이터 분석
+* 매출 데이터 분석
+* 운동 기록 분석
+* 음악 데이터 분석
+* 사용자 행동 분석
+
+---
+
+# Progress
+
+## Python Fundamentals
+
+```text
+██████████ 100%
+```
+
+## NumPy & Pandas
+
+```text
+███████░░░ 70%
+```
+
+## Mini Projects
+
+```text
+██░░░░░░░░ 20%
+```
+
+## Visualization
+
+```text
+░░░░░░░░░░ 0%
+```
+
+## Portfolio
+
+```text
+░░░░░░░░░░ 0%
+```
+
+---
+
+# Study Workflow
+
+모든 학습은 아래 순서로 진행합니다.
+
+1. 개념 학습
+2. 예제 실습
+3. 실습 과제
+4. 코드 리뷰
+5. 개발 로그 작성
+6. 프로젝트 리팩터링
+7. Git Commit
+8. GitHub Push
 
 ---
 
@@ -21,165 +145,24 @@ Python을 이용한 데이터 분석 역량을 기르기 위한 학습 저장소
 ```text
 python-study/
 │
-├── exercises/      # 실습 코드
+├── data/           # CSV 등 원본 데이터
+├── exercises/      # 학습 예제 및 실습
+├── projects/       # 미니 프로젝트
+├── reports/        # 분석 결과
 ├── logs/           # 개발 로그
-├── data/           # 실습 데이터(CSV 등)
-├── projects/       # 프로젝트
 ├── notebooks/      # Jupyter Notebook
+│
+├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-# Learning Progress
+# Learning Goals
 
-## Python Fundamentals
-
-* [x] Function
-* [x] File I/O
-* [x] List & Dictionary
-* [x] List Comprehension
-* [x] Exception Handling
-
-## NumPy & Pandas
-
-* [x] NumPy Array
-* [x] Boolean Indexing (NumPy)
-* [x] DataFrame Filtering (Pandas)
-* [x] Indexing & Slicing
-* [x] loc / iloc
-* [x] Statistics
-* [x] Missing Value Handling
-* [ ] Sorting
-* [ ] Broadcasting & Column Operations
-* [ ] Merge & Concat
-
-## Projects
-
-* [ ] Student Score Analysis
-* [ ] CSV Data Analysis
-* [ ] Public Data Analysis
-* [ ] Personal Data Analysis
-
----
-
-# Learning Curriculum
-
-## Phase 1 - Python Fundamentals
-
-### Function
-
-* 함수 정의 및 호출
-* Parameter
-* Return
-* 함수 분리
-
-### File I/O
-
-* 파일 생성
-* 파일 읽기
-* 파일 쓰기
-* Append
-* with 문
-
-### List & Dictionary
-
-* List
-* Dictionary
-* List of Dictionary
-* 반복문을 이용한 데이터 처리
-
-### List Comprehension
-
-* 데이터 변환
-* 조건 필터링
-* Pythonic 코드 작성
-
-### Exception Handling
-
-* try / except
-* ValueError
-* FileNotFoundError
-* 데이터 정제 기초
-
----
-
-## Phase 2 - NumPy & Pandas
-
-### Chapter 1
-
-NumPy Array
-↔ Pandas DataFrame
-
-### Chapter 2
-
-NumPy Boolean Indexing
-↔ Pandas DataFrame Filtering
-
-### Chapter 3
-
-NumPy Indexing & Slicing
-↔ Pandas loc / iloc
-
-### Chapter 4
-
-NumPy Statistics
-↔ Pandas Statistics
-
-### Chapter 5
-
-NumPy Missing Values
-↔ Pandas Missing Value Handling
-
-### Chapter 6
-
-NumPy Broadcasting
-↔ Pandas Column Operations
-
-### Chapter 7
-
-NumPy Array Operations
-↔ Pandas Merge / Concat
-
----
-
-## Phase 3 - Data Analysis Projects
-
-### Project 1
-
-학생 성적 데이터 분석
-
-### Project 2
-
-CSV 데이터 분석
-
-### Project 3
-
-공공데이터 분석
-
-### Project 4
-
-개인 데이터 분석
-
----
-
-# Development Log
-
-| Topic              | Log                          | Exercise                          |
-| ------------------ | ---------------------------- | --------------------------------- |
-| Function           | `logs/function.md`           | `exercises/function.py`           |
-| File I/O           | `logs/file_io.md`            | `exercises/file_io.py`            |
-| List & Dictionary  | `logs/list_dictionary.md`    | `exercises/list_dictionary.py`    |
-| List Comprehension | `logs/list_comprehension.md` | `exercises/list_comprehension.py` |
-| Exception Handling | `logs/exception_handling.md` | `exercises/exception.py`          |
-| NumPy Array        | `logs/numpy_array.md`        | `exercises/numpy_array.py`        |
-
----
-
-# Study Principles
-
-* 개념을 이해한 후 직접 구현한다.
-* 모든 학습 내용은 실습 코드와 개발 로그를 함께 기록한다.
-* 단순히 문법을 암기하지 않고 데이터 분석 관점에서 학습한다.
-* NumPy와 Pandas를 동일한 개념으로 연결하여 이해한다.
-* 프로젝트를 통해 실제 데이터를 분석하며 학습 내용을 검증한다.
+* Python 문법을 이해하고 활용할 수 있다.
+* NumPy를 이용하여 배열 기반 연산을 수행할 수 있다.
+* Pandas를 이용하여 데이터를 조회, 정제, 집계할 수 있다.
+* 실제 CSV 데이터를 분석하고 결과를 리포트로 생성할 수 있다.
+* 데이터 분석 프로젝트를 GitHub 포트폴리오 형태로 관리할 수 있다.
