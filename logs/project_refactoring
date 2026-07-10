@@ -1,0 +1,54 @@
+# Project Refactoring - Analysis Module Separation
+
+## 학습일
+
+* 2026-07-08
+
+## Goal
+
+* 분석 로직과 출력 로직을 분리한다.
+* 분석 결과를 재사용 가능한 구조로 개선한다.
+* 데이터 분석 프로젝트의 유지보수성을 향상시킨다.
+
+## Implementation
+
+파일
+
+* `projects/student_score_analysis/analyze.py`
+* `projects/student_score_analysis/report.py`
+
+구현 내용
+
+* 분석 로직을 `analyze()` 함수로 분리하였다.
+* `analyze()`는 분석 결과를 Dictionary 형태로 반환하도록 구현하였다.
+* `report.py`는 계산을 직접 수행하지 않고 분석 결과를 받아 출력하도록 수정하였다.
+
+## 핵심 학습
+
+* 하나의 함수는 하나의 책임만 가져야 한다.
+* 분석과 출력을 분리하면 코드의 재사용성이 높아진다.
+* 데이터 분석 프로젝트도 일반 소프트웨어 프로젝트처럼 구조화할 수 있다.
+
+## Learned
+
+* Pandas 코드도 모듈화가 가능하다.
+* Dictionary를 이용하면 여러 분석 결과를 한 번에 전달할 수 있다.
+* 유지보수와 테스트를 위해 역할을 분리하는 것이 중요하다.
+
+## 프로젝트 개선
+
+기존 구조
+
+CSV 읽기 → 분석 → 출력
+
+↓
+
+개선 구조
+
+CSV 읽기 → analyze() → report.py
+
+분석 로직과 출력 로직이 독립적으로 동작하도록 개선하였다.
+
+## Next
+
+Student Score Analysis 프로젝트를 마무리하고 데이터 시각화를 학습한다.
