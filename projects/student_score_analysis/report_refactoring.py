@@ -1,26 +1,14 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+from analyze import load_data, analyze
+from create_report import create_report
 
-from analyze import analyze
-
-df = pd.read_csv("../../data/students.csv")
+df = load_data("../../data/students.csv")
 
 result = analyze(df)
 
-print(f"""
-==============================
-      Refactoring Report
-==============================
-평균 : {result['average']:.2f}
+# print(create_report(result= result))
 
-최대값 : {result['max']}
-
-최소값 : {result['min']}
-
-결측치 : {result['missing']}
-
-전공별 평균
-{result['major_mean']}
-
-등급 분포
-{result['grade_count']}
-""")
+major_mean = result["major_mean"]
+plt.bar(major_mean.index, major_mean.values)
+plt.show()
