@@ -1,26 +1,25 @@
-from analyze import load_data
-import matplotlib.pyplot as plt
+from analyze import load_data, validate_data, summarize_by_month, summarize_by_category
+from pathlib import Path
+from report import save_report
 
-df = load_data("./data/sales.csv")
+BASE_DIR = Path(__file__).resolve().parent
+DATA_PATH = BASE_DIR / "data" / "sales.csv"
+OUTPUT_DIR = BASE_DIR / "output"
+MONTHLY_REPORT_PATH = OUTPUT_DIR / "monthly_sales.csv"
+CATEGORY_REPORT_PATH = OUTPUT_DIR / "category_sales.csv"
 
-head = df.head()
-info = df.info()
-summary = df.describe()
+def main():
+    df = load_data(DATA_PATH)
+    validate_data(df)
 
-result = f"""
-==============================
-Sales Dataset Summary
-==============================
+    monthly_sales = summarize_by_month(df)
+    category_sales = summarize_by_category(df)
 
-행 개수 : {df.shape[0]}
-열 개수 : {df.shape[1]}
+    print("월별 매출")
+    print(monthly_sales)
 
-기술 통계
-{head}
-==============================
-{info}
-==============================
-{summary}
-"""
+    print("\n카테고리별 매출")
+    print(category_sales)
 
-print(result)
+if __name__ == "__main__":
+    main()
