@@ -13,14 +13,14 @@ def create_user(user: User):
 @app.post("/books")
 def create_book(book: Book):
     return {
-        "messate": "Book Created",
+        "message": "Book Created",
         "book": book
     }
 
 @app.post("/students")
 def create_student(student: Student):
     return {
-        "message": "Studetn Created",
+        "message": "Student Created",
         "student": student
     }
 
