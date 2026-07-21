@@ -6,6 +6,6 @@
 - [x] Lesson02 Path Parameter
 - [x] Lesson03 Query Parameter
 - [x] Lesson04 Response Model
-- [ ] Lesson05 Request Body
+- [x] Lesson05 Request Body
 - [ ] Lesson06 CRUD
 - [ ] Mini Project
