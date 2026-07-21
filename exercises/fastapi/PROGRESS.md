@@ -7,5 +7,5 @@
 - [x] Lesson03 Query Parameter
 - [x] Lesson04 Response Model
 - [x] Lesson05 Request Body
-- [ ] Lesson06 CRUD
+- [x] Lesson06 CRUD
 - [ ] Mini Project
