@@ -1126,3 +1126,1095 @@ Phase 4에서는 다음 내용을 학습한다.
 - 데이터베이스 기반 CRUD
 - Repository 계층
 - 서버 재시작 후 데이터 유지
+
+
+# Phase 4 - Database Integration
+
+Phase 4에서는 Python List 기반의 메모리 저장소를 SQLite 데이터베이스로 교체한다.
+
+전체 과정은 다음 단계로 나누어 진행한다.
+
+```text
+Phase 4-1  SQLite·SQLAlchemy 환경 구성
+Phase 4-2  Repository 계층과 조회·등록
+Phase 4-3  수정·삭제 및 전체 CRUD 전환
+Phase 4-4  데이터베이스 세션 의존성 개선
+```
+
+---
+
+# Phase 4-1 - SQLite and SQLAlchemy Setup
+
+## 학습 목표
+
+- SQLAlchemy를 설치하고 SQLite 연결을 구성한다.
+- SQLAlchemy Engine과 Session Factory를 생성한다.
+- ORM Entity를 정의한다.
+- Python 클래스를 데이터베이스 테이블과 연결한다.
+- 애플리케이션 실행 시 테이블을 생성한다.
+- SQLite 데이터베이스 파일 생성을 확인한다.
+
+---
+
+## 프로젝트 구조
+
+Phase 4-1을 완료한 프로젝트 구조는 다음과 같다.
+
+```text
+book-management-api/
+├── main.py
+├── database.py
+├── entities.py
+├── models.py
+├── books.db
+├── data/
+│   ├── __init__.py
+│   └── books.py
+├── routers/
+│   ├── __init__.py
+│   └── books.py
+└── services/
+    ├── __init__.py
+    └── book_service.py
+```
+
+현재 `books.db`는 생성되었지만, 기존 CRUD API는 아직 메모리 List를 사용한다.
+
+다음 단계에서 Repository 계층을 추가하여 실제 데이터베이스를 사용하도록 변경한다.
+
+---
+
+## SQLAlchemy 설치
+
+가상환경이 활성화된 상태에서 다음 명령으로 SQLAlchemy를 설치한다.
+
+```powershell
+pip install sqlalchemy
+```
+
+설치 확인:
+
+```powershell
+pip show sqlalchemy
+```
+
+---
+
+## 데이터베이스 연결 설정
+
+`database.py`에서 SQLite 연결과 SQLAlchemy 기반 설정을 정의하였다.
+
+```python
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
+
+DATABASE_URL = "sqlite:///./books.db"
+
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
+
+
+class Base(DeclarativeBase):
+    pass
+```
+
+---
+
+## DATABASE_URL
+
+```python
+DATABASE_URL = "sqlite:///./books.db"
+```
+
+구성 요소의 의미는 다음과 같다.
+
+```text
+sqlite       SQLite 데이터베이스 사용
+:///         상대경로 파일 사용
+./books.db   현재 실행 위치에 데이터베이스 파일 생성
+```
+
+---
+
+## Engine
+
+```python
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+```
+
+Engine은 애플리케이션과 데이터베이스 사이의 연결을 관리한다.
+
+```text
+FastAPI
+   │
+   ▼
+SQLAlchemy Engine
+   │
+   ▼
+SQLite
+```
+
+SQLite를 FastAPI 요청 환경에서 사용하기 위해 다음 옵션을 설정하였다.
+
+```python
+connect_args={"check_same_thread": False}
+```
+
+---
+
+## SessionLocal
+
+```python
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
+```
+
+`SessionLocal`은 데이터베이스 작업에 사용할 Session 객체를 생성한다.
+
+이후 Repository 계층에서 다음과 같은 방식으로 사용한다.
+
+```python
+db = SessionLocal()
+```
+
+Session은 데이터베이스의 조회·등록·수정·삭제와 트랜잭션 처리를 담당한다.
+
+---
+
+## DeclarativeBase
+
+```python
+class Base(DeclarativeBase):
+    pass
+```
+
+`Base`는 SQLAlchemy Entity가 상속하는 공통 기반 클래스이다.
+
+```python
+class BookEntity(Base):
+    ...
+```
+
+Entity가 `Base`를 상속하면 해당 클래스의 테이블 정보가 SQLAlchemy Metadata에 등록된다.
+
+---
+
+## Pydantic Model과 SQLAlchemy Entity
+
+프로젝트에는 역할이 다른 두 종류의 모델이 존재한다.
+
+| 구분 | 클래스 | 파일 | 역할 |
+|---|---|---|---|
+| Pydantic Model | `Book` | `models.py` | API 요청 데이터 검증 |
+| SQLAlchemy Entity | `BookEntity` | `entities.py` | 데이터베이스 테이블 매핑 |
+
+### Pydantic Model
+
+```python
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    id: int
+    title: str
+    author: str
+```
+
+주요 역할:
+
+```text
+Request Body 검증
+Python 타입 검증
+Swagger 문서 생성
+API 데이터 구조 표현
+```
+
+### SQLAlchemy Entity
+
+```python
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from database import Base
+
+
+class BookEntity(Base):
+    __tablename__ = "books"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(200))
+    author: Mapped[str] = mapped_column(String(100))
+```
+
+주요 역할:
+
+```text
+books 테이블 정의
+Python 객체와 데이터베이스 행 연결
+컬럼 타입과 제약조건 정의
+```
+
+---
+
+## 테이블 이름
+
+```python
+__tablename__ = "books"
+```
+
+데이터베이스에 생성되는 테이블 이름은 `books`이다.
+
+---
+
+## 기본키
+
+```python
+id: Mapped[int] = mapped_column(primary_key=True)
+```
+
+`id`는 각 도서 데이터를 고유하게 구분하는 기본키이다.
+
+기본키는 중복될 수 없다.
+
+---
+
+## 문자열 컬럼
+
+```python
+title: Mapped[str] = mapped_column(String(200))
+author: Mapped[str] = mapped_column(String(100))
+```
+
+컬럼별 최대 길이는 다음과 같다.
+
+```text
+title   200자
+author  100자
+```
+
+---
+
+## 테이블 생성
+
+`main.py`에서 SQLAlchemy Metadata를 이용해 테이블을 생성한다.
+
+```python
+from fastapi import FastAPI
+
+import entities
+from database import Base, engine
+from routers import books
+
+
+Base.metadata.create_all(bind=engine)
+
+
+app = FastAPI()
+
+app.include_router(books.router)
+```
+
+---
+
+## Entity import가 필요한 이유
+
+```python
+import entities
+```
+
+이 코드는 변수나 함수를 직접 사용하기 위한 import가 아니다.
+
+`entities.py`가 실행되어야 `BookEntity`가 SQLAlchemy Metadata에 등록된다.
+
+실행 흐름은 다음과 같다.
+
+```text
+entities.py import
+        │
+        ▼
+BookEntity 클래스 실행
+        │
+        ▼
+books 테이블 정보 등록
+        │
+        ▼
+Base.metadata.create_all()
+        │
+        ▼
+SQLite books 테이블 생성
+```
+
+---
+
+## 데이터베이스 파일 생성 확인
+
+서버를 실행하였다.
+
+```powershell
+uvicorn main:app --reload
+```
+
+실행 후 프로젝트 디렉터리에 다음 파일이 생성된 것을 확인하였다.
+
+```text
+books.db
+```
+
+이 결과는 다음 구성이 정상적으로 동작했다는 의미이다.
+
+```text
+SQLite 연결                ✅
+SQLAlchemy Engine 생성     ✅
+BookEntity 등록            ✅
+Metadata 테이블 생성       ✅
+books.db 파일 생성         ✅
+```
+
+---
+
+## 현재 데이터 흐름
+
+현재 SQLite 연결과 테이블은 생성되었지만, CRUD 기능은 아직 메모리 저장소를 사용한다.
+
+```text
+Router
+   │
+   ▼
+Service
+   │
+   ▼
+Python List
+```
+
+현재 Service에서는 다음 데이터에 접근한다.
+
+```python
+from data.books import books
+```
+
+Phase 4-2에서 Repository 계층을 만들고 데이터 흐름을 다음처럼 변경한다.
+
+```text
+Router
+   │
+   ▼
+Service
+   │
+   ▼
+Repository
+   │
+   ▼
+SQLAlchemy Session
+   │
+   ▼
+SQLite
+```
+
+---
+
+## Git에서 데이터베이스 파일 제외
+
+`books.db`는 로컬 실행 과정에서 생성되는 테스트 데이터 파일이므로 Git에서 제외한다.
+
+`.gitignore`:
+
+```gitignore
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# SQLite database
+*.db
+```
+
+테이블 구조와 Entity 코드는 Git에 포함하지만, 로컬 테스트 데이터는 포함하지 않는다.
+
+---
+
+## Phase 4-1에서 배운 내용
+
+- SQLite 데이터베이스의 기본 개념
+- SQLAlchemy Engine
+- `sessionmaker`
+- 데이터베이스 Session
+- `DeclarativeBase`
+- SQLAlchemy ORM Entity
+- `Mapped`
+- `mapped_column`
+- 기본키
+- 문자열 컬럼
+- Pydantic Model과 ORM Entity의 차이
+- SQLAlchemy Metadata
+- `Base.metadata.create_all()`
+- Entity import와 테이블 등록 과정
+- SQLite 데이터베이스 파일 생성
+- 로컬 DB 파일의 Git 제외
+
+---
+
+## Phase 4-1 완료 조건
+
+- [x] SQLAlchemy 설치
+- [x] `database.py` 생성
+- [x] SQLite 연결 URL 작성
+- [x] SQLAlchemy Engine 생성
+- [x] `SessionLocal` 생성
+- [x] `DeclarativeBase` 정의
+- [x] `entities.py` 생성
+- [x] `BookEntity` 정의
+- [x] `books` 테이블 이름 지정
+- [x] `id` 기본키 설정
+- [x] `title` 컬럼 설정
+- [x] `author` 컬럼 설정
+- [x] `main.py`에서 Entity import
+- [x] `Base.metadata.create_all()` 실행
+- [x] `books.db` 생성 확인
+- [ ] `.gitignore`에 `*.db` 추가 확인
+
+---
+
+## 다음 단계
+
+Phase 4-2에서는 Repository 계층을 추가하고 도서 등록과 조회 기능을 SQLite로 전환한다.
+
+추가될 구조:
+
+```text
+book-management-api/
+└── repositories/
+    ├── __init__.py
+    └── book_repository.py
+```
+
+구현할 기능:
+
+```text
+BookEntity 생성
+데이터베이스 INSERT
+전체 도서 SELECT
+ID를 이용한 단건 SELECT
+Session commit
+Session refresh
+```
+
+Phase 4-2 완료 후에는 등록한 도서가 서버를 다시 실행해도 유지된다.
+
+
+# Phase 4-2 - Repository and Read/Create
+
+## 학습 목표
+
+- Repository 계층의 역할을 이해한다.
+- SQLAlchemy Session을 이용해 데이터를 조회하고 등록한다.
+- SQLAlchemy Entity와 Pydantic Model을 변환한다.
+- Service와 데이터베이스 접근 로직을 분리한다.
+- 도서 조회와 등록 기능을 SQLite 기반으로 전환한다.
+- 서버 재시작 후에도 데이터가 유지되는지 확인한다.
+
+---
+
+## 프로젝트 구조
+
+```text
+book-management-api/
+├── main.py
+├── database.py
+├── entities.py
+├── models.py
+├── books.db
+├── repositories/
+│   ├── __init__.py
+│   └── book_repository.py
+├── routers/
+│   ├── __init__.py
+│   └── books.py
+└── services/
+    ├── __init__.py
+    └── book_service.py
+```
+
+---
+
+## 계층 구조
+
+Phase 4-2부터 데이터베이스 접근을 전담하는 Repository 계층을 사용한다.
+
+```text
+Router
+   │
+   ▼
+Service
+   │
+   ▼
+Repository
+   │
+   ▼
+SQLAlchemy Session
+   │
+   ▼
+SQLite
+```
+
+각 계층의 역할은 다음과 같다.
+
+| 계층 | 역할 |
+|---|---|
+| Router | HTTP 요청 수신과 응답 구성 |
+| Service | 비즈니스 규칙과 예외 처리 |
+| Repository | 데이터베이스 조회와 저장 |
+| Entity | 데이터베이스 테이블 매핑 |
+| Pydantic Model | API 데이터 검증과 직렬화 |
+
+---
+
+## Pydantic ORM 변환 설정
+
+`models.py`:
+
+```python
+from pydantic import BaseModel, ConfigDict
+
+
+class Book(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    author: str
+```
+
+다음 설정을 추가하였다.
+
+```python
+model_config = ConfigDict(from_attributes=True)
+```
+
+이 설정을 사용하면 SQLAlchemy Entity의 속성을 읽어 Pydantic 모델을 생성할 수 있다.
+
+```python
+book = Book.model_validate(book_entity)
+```
+
+변환 대상은 다음과 같다.
+
+```text
+book_entity.id
+book_entity.title
+book_entity.author
+```
+
+---
+
+## Pydantic Model과 Entity
+
+프로젝트에서는 역할이 다른 두 개의 도서 클래스를 사용한다.
+
+```text
+Book
+API 요청·응답 모델
+
+BookEntity
+데이터베이스 테이블 모델
+```
+
+### API 요청에서 데이터베이스로 저장
+
+```text
+JSON
+ ↓
+Book
+ ↓
+BookEntity
+ ↓
+SQLite
+```
+
+### 데이터베이스 조회 결과를 API로 반환
+
+```text
+SQLite
+ ↓
+BookEntity
+ ↓
+Book
+ ↓
+JSON
+```
+
+---
+
+## Repository 계층
+
+`repositories/book_repository.py`:
+
+```python
+from sqlalchemy import select
+
+from database import SessionLocal
+from entities import BookEntity
+
+
+def get_books() -> list[BookEntity]:
+    with SessionLocal() as db:
+        statement = select(BookEntity)
+        books = db.scalars(statement).all()
+
+        return list(books)
+
+
+def get_book(book_id: int) -> BookEntity | None:
+    with SessionLocal() as db:
+        return db.get(BookEntity, book_id)
+
+
+def create_book(book_entity: BookEntity) -> BookEntity:
+    with SessionLocal() as db:
+        db.add(book_entity)
+        db.commit()
+        db.refresh(book_entity)
+
+        return book_entity
+```
+
+Repository는 FastAPI의 HTTP 요청이나 상태 코드를 알지 못한다.
+
+Repository의 책임은 다음과 같다.
+
+```text
+SQL 작성
+Session 관리
+데이터 조회
+데이터 등록
+Entity 반환
+```
+
+---
+
+## 전체 도서 조회
+
+```python
+def get_books() -> list[BookEntity]:
+    with SessionLocal() as db:
+        statement = select(BookEntity)
+        books = db.scalars(statement).all()
+
+        return list(books)
+```
+
+다음 코드는 `BookEntity`를 대상으로 SELECT 문을 생성한다.
+
+```python
+statement = select(BookEntity)
+```
+
+개념적으로 다음 SQL에 해당한다.
+
+```sql
+SELECT id, title, author
+FROM books;
+```
+
+다음 코드는 조회 결과의 각 행을 `BookEntity` 객체로 반환한다.
+
+```python
+db.scalars(statement).all()
+```
+
+---
+
+## 단건 조회
+
+```python
+def get_book(book_id: int) -> BookEntity | None:
+    with SessionLocal() as db:
+        return db.get(BookEntity, book_id)
+```
+
+`db.get()`은 기본키를 기준으로 데이터를 조회한다.
+
+```python
+db.get(BookEntity, book_id)
+```
+
+반환 결과:
+
+```text
+도서 존재      BookEntity
+도서 없음      None
+```
+
+Repository는 데이터가 없는 경우에도 `HTTPException`을 발생시키지 않는다.
+
+데이터가 없다는 사실을 어떤 HTTP 상태로 표현할지는 Service가 결정한다.
+
+---
+
+## 도서 등록
+
+```python
+def create_book(book_entity: BookEntity) -> BookEntity:
+    with SessionLocal() as db:
+        db.add(book_entity)
+        db.commit()
+        db.refresh(book_entity)
+
+        return book_entity
+```
+
+### `add()`
+
+```python
+db.add(book_entity)
+```
+
+Entity를 현재 Session의 관리 대상으로 등록한다.
+
+### `commit()`
+
+```python
+db.commit()
+```
+
+트랜잭션의 변경 내용을 데이터베이스에 반영한다.
+
+### `refresh()`
+
+```python
+db.refresh(book_entity)
+```
+
+데이터베이스에 저장된 최신 데이터를 Entity에 다시 반영한다.
+
+---
+
+## Service 계층 전환
+
+`services/book_service.py`:
+
+```python
+from http import HTTPStatus
+
+from fastapi import HTTPException
+
+from entities import BookEntity
+from models import Book
+from repositories import book_repository
+
+
+def get_books() -> list[Book]:
+    book_entities = book_repository.get_books()
+
+    return [
+        Book.model_validate(book_entity)
+        for book_entity in book_entities
+    ]
+
+
+def get_book(book_id: int) -> Book:
+    book_entity = book_repository.get_book(book_id)
+
+    if book_entity is None:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="Book Not Found"
+        )
+
+    return Book.model_validate(book_entity)
+
+
+def create_book(book: Book) -> Book:
+    saved_book = book_repository.get_book(book.id)
+
+    if saved_book is not None:
+        raise HTTPException(
+            status_code=HTTPStatus.CONFLICT,
+            detail="Book ID Already Exists"
+        )
+
+    book_entity = BookEntity(
+        id=book.id,
+        title=book.title,
+        author=book.author
+    )
+
+    created_entity = book_repository.create_book(book_entity)
+
+    return Book.model_validate(created_entity)
+```
+
+Service는 다음 역할을 담당한다.
+
+```text
+중복 ID 검사
+404 예외 처리
+409 예외 처리
+Book과 BookEntity 변환
+Repository 호출
+```
+
+---
+
+## 전체 조회 흐름
+
+```text
+GET /books
+      │
+      ▼
+Router
+      │
+      ▼
+Service.get_books()
+      │
+      ▼
+Repository.get_books()
+      │
+      ▼
+SELECT
+      │
+      ▼
+list[BookEntity]
+      │
+      ▼
+list[Book]
+      │
+      ▼
+JSON Response
+```
+
+Repository가 반환한 Entity 목록을 다음 코드로 변환한다.
+
+```python
+return [
+    Book.model_validate(book_entity)
+    for book_entity in book_entities
+]
+```
+
+---
+
+## 단건 조회 흐름
+
+```text
+GET /books/{book_id}
+      │
+      ▼
+Repository.get_book()
+      │
+      ├── BookEntity
+      │        ↓
+      │      Book으로 변환
+      │
+      └── None
+               ↓
+          404 Not Found
+```
+
+Service가 `None`을 HTTP 오류로 변환한다.
+
+```python
+if book_entity is None:
+    raise HTTPException(
+        status_code=HTTPStatus.NOT_FOUND,
+        detail="Book Not Found"
+    )
+```
+
+---
+
+## 등록 흐름
+
+```text
+POST /books
+      │
+      ▼
+Book 요청 모델
+      │
+      ▼
+동일 ID 조회
+      │
+      ├── 존재함 → 409 Conflict
+      │
+      └── 존재하지 않음
+                  │
+                  ▼
+            BookEntity 생성
+                  │
+                  ▼
+            Repository 저장
+                  │
+                  ▼
+              SQLite INSERT
+                  │
+                  ▼
+            Book으로 변환
+```
+
+Entity 생성:
+
+```python
+book_entity = BookEntity(
+    id=book.id,
+    title=book.title,
+    author=book.author
+)
+```
+
+중복 ID가 존재하면 다음 오류를 반환한다.
+
+```python
+raise HTTPException(
+    status_code=HTTPStatus.CONFLICT,
+    detail="Book ID Already Exists"
+)
+```
+
+---
+
+## 메모리 저장소와 SQLite의 차이
+
+### 메모리 저장소
+
+```text
+서버 실행
+   ↓
+데이터 등록
+   ↓
+Python List 저장
+   ↓
+서버 종료
+   ↓
+데이터 소멸
+```
+
+### SQLite 저장소
+
+```text
+서버 실행
+   ↓
+데이터 등록
+   ↓
+books.db 저장
+   ↓
+서버 종료
+   ↓
+서버 재실행
+   ↓
+데이터 유지
+```
+
+---
+
+## 영구 저장 검증
+
+다음 순서로 테스트하였다.
+
+```text
+1. POST /books로 도서 등록
+2. GET /books로 등록 결과 확인
+3. 서버 종료
+4. 서버 재실행
+5. GET /books 재호출
+```
+
+서버를 다시 실행한 뒤에도 등록한 도서가 조회되는 것을 확인하였다.
+
+```text
+SQLite 데이터 저장         ✅
+서버 재시작                ✅
+등록 데이터 유지           ✅
+```
+
+이 결과를 통해 조회와 등록 기능이 `data/books.py`의 메모리 리스트가 아니라 SQLite의 `books` 테이블을 사용한다는 것을 확인하였다.
+
+---
+
+## Phase 4-2 API
+
+현재 SQLite로 전환된 API는 다음과 같다.
+
+| Method | URL | 기능 |
+|---|---|---|
+| GET | `/books` | 전체 도서 조회 |
+| GET | `/books/{book_id}` | 단건 도서 조회 |
+| POST | `/books` | 도서 등록 |
+
+수정과 삭제는 다음 단계에서 SQLite로 전환한다.
+
+---
+
+## Phase 4-2에서 배운 내용
+
+- Repository Pattern
+- 계층별 책임 분리
+- SQLAlchemy `select()`
+- `Session.scalars()`
+- `Session.get()`
+- `Session.add()`
+- `Session.commit()`
+- `Session.refresh()`
+- Pydantic `ConfigDict`
+- `from_attributes=True`
+- `Book`과 `BookEntity` 변환
+- Repository와 HTTP 예외의 분리
+- SQLite 영구 저장 검증
+
+---
+
+## Phase 4-2 완료 조건
+
+- [x] `models.py`에 `from_attributes=True` 설정
+- [x] `repositories` 패키지 생성
+- [x] 전체 조회 Repository 구현
+- [x] 단건 조회 Repository 구현
+- [x] 등록 Repository 구현
+- [x] Service 전체 조회 전환
+- [x] Service 단건 조회 전환
+- [x] Service 등록 전환
+- [x] `BookEntity`를 `Book`으로 변환
+- [x] `Book`을 `BookEntity`로 변환
+- [x] 없는 ID에 대해 404 처리
+- [x] 중복 ID에 대해 409 처리
+- [x] SQLite 데이터 등록 확인
+- [x] 서버 재시작 후 데이터 유지 확인
+
+---
+
+## 다음 단계
+
+Phase 4-3에서는 수정과 삭제 기능을 SQLite 기반으로 전환한다.
+
+추가할 Repository 기능:
+
+```text
+update_book()
+delete_book()
+```
+
+복원할 API:
+
+```text
+PUT    /books/{book_id}
+DELETE /books/{book_id}
+```
+
+Phase 4-3이 완료되면 모든 CRUD 기능이 SQLite를 사용하게 된다.

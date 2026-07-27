@@ -1,52 +1,45 @@
 from http import HTTPStatus
+
 from fastapi import HTTPException
-from data.books import books
+
+from entities import BookEntity
 from models import Book
+from repositories import book_repository
 
 def get_books() -> list[Book]:
-    return books
+    book_entities = book_repository.get_books()
+
+    return [
+        Book.model_validate(book_entity)
+        for book_entity in book_entities
+    ]
 
 def get_book(book_id: int) -> Book:
-    for book in books:
-        if book.id == book_id:
-            return book
+    book_entity = book_repository.get_book(book_id)
 
-    raise HTTPException(
-        status_code=HTTPStatus.NOT_FOUND,
-        detail="Book Not Found"
-    )
+    if book_entity is None:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="Book Not Found"
+        )
+
+    return Book.model_validate(book_entity)
 
 def create_book(book: Book) -> Book:
-    for saved_book in books:
-        if saved_book.id == book.id:
-            raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail="Book ID Already Exists"
-            )
+    saved_book = book_repository.get_book(book.id)
 
-    books.append(book)
+    if saved_book is not None:
+        raise HTTPException(
+            status_code=HTTPStatus.CONFLICT,
+            detail="Book ID Already Exists"
+        )
 
-    return book
-
-def update_book(book_id: int, book: Book) -> Book:
-    for index, saved_book in enumerate(books):
-        if saved_book.id == book_id:
-            books[index] = book
-
-            return book
-
-    raise HTTPException(
-        status_code=HTTPStatus.NOT_FOUND,
-        detail="Book Not Found"
+    book_entity = BookEntity(
+        id=book.id,
+        title=book.title,
+        author=book.author
     )
 
-def delete_book(book_id: int) -> None:
-    for book in books:
-        if book.id == book_id:
-            books.remove(book)
-            return
+    created_entity = book_repository.create_book(book_entity)
 
-    raise HTTPException(
-        status_code=HTTPStatus.NOT_FOUND,
-        detail="Book Not Found"
-    )
+    return Book.model_validate(created_entity)

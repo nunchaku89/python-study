@@ -16,6 +16,6 @@
 - [x] Phase 3 - Service Layer
 - [ ] Phase 4 - Database Integration
   - [x] Phase 4-1 - SQLite and SQLAlchemy Setup
-  - [ ] Phase 4-2 - Repository and Read/Create
+  - [x] Phase 4-2 - Repository and Read/Create
   - [ ] Phase 4-3 - Update/Delete and Full CRUD
   - [ ] Phase 4-4 - Database Session Dependency

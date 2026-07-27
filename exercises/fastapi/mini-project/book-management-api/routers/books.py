@@ -24,20 +24,3 @@ def create_book(book: Book):
         "message": "Book Created",
         "book": created_book
     }
-
-@router.put("/{book_id}")
-def update_book(book_id: int, book: Book):
-    updated_book = book_service.update_book(book_id, book)
-
-    return {
-        "message": "Book Updated",
-        "book": updated_book
-    }
-
-@router.delete("/{book_id}")
-def delete_book(book_id: int):
-    book_service.delete_book(book_id)
-
-    return {
-        "message": "Book Deleted"
-    }
