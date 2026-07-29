@@ -2218,3 +2218,42 @@ DELETE /books/{book_id}
 ```
 
 Phase 4-3이 완료되면 모든 CRUD 기능이 SQLite를 사용하게 된다.
+
+
+## Phase 4-4 - Database Session Dependency
+
+### 목표
+
+FastAPI Dependency Injection을 이용하여 요청당 하나의 SQLAlchemy Session을 공유하도록 구조를 개선하였다.
+
+### 변경 사항
+
+- `get_db()` Dependency 추가
+- Repository에서 Session 생성 제거
+- Repository가 Session을 매개변수로 전달받도록 변경
+- Service가 Session을 Repository로 전달
+- Router에서 `Depends(get_db)` 사용
+
+### 요청 흐름
+
+Client
+↓
+Router
+↓
+Depends(get_db)
+↓
+Session
+↓
+Service
+↓
+Repository
+↓
+SQLite
+
+### 학습 내용
+
+- FastAPI Dependency Injection
+- SQLAlchemy Session Lifecycle
+- 요청당 하나의 Session 사용
+- Repository Pattern 개선
+- 계층 간 의존성 분리

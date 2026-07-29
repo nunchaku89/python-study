@@ -1,23 +1,53 @@
 from sqlalchemy import select
 
-from database import SessionLocal
 from entities import BookEntity
 
-def get_books() -> list[BookEntity]:
-    with SessionLocal() as db:
-        statement = select(BookEntity)
-        books = db.scalars(statement).all()
+from sqlalchemy.orm import Session
 
-        return list(books)
 
-def get_book(book_id: int) -> BookEntity | None:
-    with SessionLocal() as db:
-        return db.get(BookEntity, book_id)
+def get_books(db: Session) -> list[BookEntity]:
+    statement = select(BookEntity)
+    books = db.scalars(statement).all()
 
-def create_book(book_entity: BookEntity) -> BookEntity:
-    with SessionLocal() as db:
-        db.add(book_entity)
-        db.commit()
-        db.refresh(book_entity)
+    return list(books)
 
-        return book_entity
+
+def get_book(
+        db: Session,
+        book_id: int
+) -> BookEntity | None:
+    return db.get(BookEntity, book_id)
+
+
+def create_book(
+        db: Session,
+        book_entity: BookEntity
+) -> BookEntity:
+    db.add(book_entity)
+    db.commit()
+    db.refresh(book_entity)
+
+    return book_entity
+
+
+def update_book(
+        db: Session,
+        book_entity: BookEntity,
+        title: str,
+        author: str
+) -> BookEntity:
+    book_entity.title = title
+    book_entity.author = author
+
+    db.commit()
+    db.refresh(book_entity)
+
+    return book_entity
+
+
+def delete_book(
+        db: Session,
+        book_entity: BookEntity
+) -> None:
+    db.delete(book_entity)
+    db.commit()
