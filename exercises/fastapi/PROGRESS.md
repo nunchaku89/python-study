@@ -8,6 +8,7 @@
 - [x] Lesson 04 - Response Model
 - [x] Lesson 05 - Request Body
 - [x] Lesson 06 - CRUD API
+- [x] Lesson 07 - Pydantic Validation & DTO
 
 ## Mini Project - Book Management API
 

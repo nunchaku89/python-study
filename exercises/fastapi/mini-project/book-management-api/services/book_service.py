@@ -4,14 +4,14 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from entities import BookEntity
-from models import Book
+from models import BookCreate, BookUpdate, BookResponse
 from repositories import book_repository
 
-def get_books(db: Session) -> list[Book]:
+def get_books(db: Session) -> list[BookResponse]:
     book_entities = book_repository.get_books(db)
 
     return [
-        Book.model_validate(book_entity)
+        BookResponse.model_validate(book_entity)
         for book_entity in book_entities
     ]
 
@@ -19,7 +19,7 @@ def get_books(db: Session) -> list[Book]:
 def get_book(
         db: Session,
         book_id: int
-) -> Book:
+) -> BookResponse:
     book_entity = book_repository.get_book(db, book_id)
 
     if book_entity is None:
@@ -28,37 +28,31 @@ def get_book(
             detail="Book Not Found"
         )
 
-    return Book.model_validate(book_entity)
+    return BookResponse.model_validate(book_entity)
 
 
 def create_book(
         db: Session,
-        book: Book
-) -> Book:
-    saved_book = book_repository.get_book(db, book.id)
-
-    if saved_book is not None:
-        raise HTTPException(
-            status_code=HTTPStatus.CONFLICT,
-            detail="Book ID Already Exists"
-        )
-
+        book: BookCreate
+) -> BookResponse:
     book_entity = BookEntity(
-        id=book.id,
         title=book.title,
         author=book.author
     )
 
-    created_entity = book_repository.create_book(db, book_entity)
+    created_entity = book_repository.create_book(
+        db=db,
+        book_entity=book_entity
+    )
 
-    return Book.model_validate(created_entity)
+    return BookResponse.model_validate(created_entity)
 
 
 def update_book(
         db: Session,
         book_id: int,
-        book: Book
-) -> Book:
+        book: BookUpdate
+) -> BookResponse:
     saved_entity = book_repository.get_book(db, book_id)
 
     if saved_entity is None:
@@ -74,19 +68,19 @@ def update_book(
         author=book.author
     )
 
-    return Book.model_validate(updated_entity)
+    return BookResponse.model_validate(updated_entity)
 
 
 def delete_book(
         db: Session,
         book_id: int
 ) -> None:
-    saved_book = book_repository.get_book(db, book_id)
+    saved_entity = book_repository.get_book(db, book_id)
 
-    if saved_book is None:
+    if saved_entity is None:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Book Not Found"
         )
 
-    book_repository.delete_book(db, saved_book)
+    book_repository.delete_book(db, saved_entity)

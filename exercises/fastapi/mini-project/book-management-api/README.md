@@ -2257,3 +2257,53 @@ SQLite
 - 요청당 하나의 Session 사용
 - Repository Pattern 개선
 - 계층 간 의존성 분리
+
+
+## Request / Response Models
+
+API 요청과 응답 모델을 분리하여 각 모델의 책임을 명확하게 구성했습니다.
+
+### Request Models
+
+- `BookCreate`
+- `BookUpdate`
+
+### Response Model
+
+- `BookResponse`
+
+### Entity
+
+- `BookEntity`
+
+```
+Client
+    │
+BookCreate / BookUpdate
+    │
+Service
+    │
+Repository
+    │
+BookEntity
+    │
+BookResponse
+    │
+Client
+```
+
+### Validation
+
+입력 데이터는 Pydantic `Field()`를 이용하여 검증합니다.
+
+| Field | Validation |
+|-------|------------|
+| title | 1~200자 |
+| author | 2~100자 |
+| id | 0보다 큰 정수 |
+
+잘못된 입력은 FastAPI가 자동으로 `422 Unprocessable Entity`를 반환합니다.
+
+### Response Model
+
+모든 API는 `response_model`을 사용하여 응답 형식을 검증하고 Swagger 문서를 자동 생성합니다.
