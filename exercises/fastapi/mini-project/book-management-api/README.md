@@ -2307,3 +2307,54 @@ Client
 ### Response Model
 
 모든 API는 `response_model`을 사용하여 응답 형식을 검증하고 Swagger 문서를 자동 생성합니다.
+
+
+## Input Validation
+
+모든 입력 데이터는 Pydantic Validation을 통해 검증됩니다.
+
+### Field Validation
+
+| Field | Rule |
+|------|------|
+| title | 1~200자 |
+| author | 2~100자 |
+| id | 0보다 큰 정수(Response Model) |
+
+### Custom Validation
+
+`BookBase`에서 `field_validator`를 사용하여 공백만 입력되는 문자열을 차단합니다.
+
+```python
+@field_validator("title", "author")
+@classmethod
+def validate_not_blank(cls, value: str) -> str:
+    value = value.strip()
+
+    if not value:
+        raise ValueError("must not be blank")
+
+    return value
+```
+
+입력 예시
+
+❌ 허용되지 않는 입력
+
+```json
+{
+  "title": "     ",
+  "author": "Wayne"
+}
+```
+
+✅ 허용되는 입력
+
+```json
+{
+  "title": "   Clean Code   ",
+  "author": "  Robert C. Martin "
+}
+```
+
+저장 시 자동으로 앞뒤 공백이 제거됩니다.

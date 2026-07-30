@@ -9,6 +9,9 @@
 - [x] Lesson 05 - Request Body
 - [x] Lesson 06 - CRUD API
 - [x] Lesson 07 - Pydantic Validation & DTO
+  - [x] Field Validation
+  - [x] Request / Response DTO
+  - [x] Custom Validator
 
 ## Mini Project - Book Management API
 

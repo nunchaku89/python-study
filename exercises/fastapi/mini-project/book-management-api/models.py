@@ -1,4 +1,9 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator
+)
 
 class BookBase(BaseModel):
     title: str = Field(
@@ -10,6 +15,21 @@ class BookBase(BaseModel):
         min_length=2,
         max_length=100
     )
+
+    @field_validator("title", "author")
+    @classmethod
+    def validate_not_blank(
+        cls,
+        value: str
+    ) -> str:
+        value = value.strip()
+
+        if not value:
+            raise ValueError(
+                "must not be blank"
+            )
+
+        return value
 
 class BookCreate(BookBase):
     pass
