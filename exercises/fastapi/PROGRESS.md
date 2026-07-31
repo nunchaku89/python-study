@@ -12,13 +12,19 @@
   - [x] Field Validation
   - [x] Request / Response DTO
   - [x] Custom Validator
+- [x] Lesson 08 - REST API Advanced
+  - [x] PATCH Model Design
+  - [ ] PATCH Endpoint
+  - [ ] Pagination
+  - [ ] Filtering
+  - [ ] Search
 
 ## Mini Project - Book Management API
 
 - [x] Phase 1 - Project Structure and APIRouter
 - [x] Phase 2 - CRUD and HTTPException
 - [x] Phase 3 - Service Layer
-- [ ] Phase 4 - Database Integration
+- [x] Phase 4 - Database Integration
   - [x] Phase 4-1 - SQLite and SQLAlchemy Setup
   - [x] Phase 4-2 - Repository and Read/Create
   - [x] Phase 4-3 - Update/Delete and Full CRUD

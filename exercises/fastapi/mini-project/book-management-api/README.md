@@ -2358,3 +2358,26 @@ def validate_not_blank(cls, value: str) -> str:
 ```
 
 저장 시 자동으로 앞뒤 공백이 제거됩니다.
+
+
+
+## PATCH Support (Preparation)
+
+부분 수정(HTTP PATCH)을 지원하기 위해 `BookPatch` 모델을 추가했습니다.
+
+### BookPatch
+
+```python
+class BookPatch(BaseModel):
+    title: str | None
+    author: str | None
+```
+
+### 특징
+
+- 모든 필드가 Optional
+- 전달된 필드만 수정 가능
+- Custom Validator를 통해 공백 문자열 차단
+- `None`은 허용하여 부분 수정 지원
+
+PATCH 구현은 다음 단계에서 `exclude_unset=True`를 사용하여 완료합니다.
