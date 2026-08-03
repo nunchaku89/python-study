@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import BookCreate, BookUpdate, BookResponse
+from models import BookCreate, BookUpdate, BookPatch, BookResponse
 from services import book_service
 
 
@@ -66,6 +66,21 @@ def update_book(
         book
     )
 
+
+@router.patch(
+        "/books/{book_id}",
+        response_model=BookResponse
+)
+def patch_book(
+    book_id: int,
+    book: BookPatch,
+    db: Session = Depends(get_db)
+):
+    return book_service.patch_book(
+        db=db,
+        book_id=book_id,
+        book=book
+    )
 
 @router.delete(
         "/{book_id}",

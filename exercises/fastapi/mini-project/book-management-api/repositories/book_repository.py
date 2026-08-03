@@ -44,6 +44,18 @@ def update_book(
 
     return book_entity
 
+def patch_book(
+        db: Session,
+        book_entity: BookEntity,
+        update_data: dict[str, str]
+) -> BookEntity:
+    for field, value in update_data.items():
+        setattr(book_entity, field, value)
+
+    db.commit()
+    db.refresh(book_entity)
+
+    return book_entity
 
 def delete_book(
         db: Session,

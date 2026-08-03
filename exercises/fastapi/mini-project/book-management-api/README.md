@@ -2381,3 +2381,32 @@ class BookPatch(BaseModel):
 - `None`은 허용하여 부분 수정 지원
 
 PATCH 구현은 다음 단계에서 `exclude_unset=True`를 사용하여 완료합니다.
+
+
+## Partial Update (PATCH)
+
+도서 정보를 부분 수정할 수 있도록 `PATCH /books/{book_id}`를 지원합니다.
+
+### 특징
+
+- 변경할 필드만 전달
+- 전달되지 않은 필드는 유지
+- `model_dump(exclude_unset=True)` 사용
+- `setattr()`를 이용한 동적 필드 수정
+
+### 예시
+
+PATCH /books/1
+
+```json
+{
+  "title": "Clean Architecture"
+}
+```
+
+수정 결과
+
+```text
+title  → 변경
+author → 유지
+```
